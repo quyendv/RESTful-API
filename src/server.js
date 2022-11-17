@@ -1,6 +1,7 @@
 const express = require('express');
 
 const cors = require('cors');
+const route = require('./routes');
 require('dotenv').config();
 
 const app = express();
@@ -17,7 +18,7 @@ app.use(
 app.use(express.json()); // convert data client gửi lên sang json
 app.use(express.urlencoded({ extended: true })); // convert data sang json nhưng từ những dạng như array, object, ...
 
-app.use('/', (req, res) => res.send('Sever On'));
+route(app);
 
 const PORT = process.env.PORT || 8080;
 
