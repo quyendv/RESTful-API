@@ -22,14 +22,17 @@ module.exports = {
             },
             role_code: {
                 type: Sequelize.STRING,
+                defaultValue: 'R3',
             },
             createdAt: {
                 allowNull: false,
-                type: Sequelize.DATE,
+                type: 'TIMESTAMP',
+                defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             },
             updatedAt: {
                 allowNull: false,
-                type: Sequelize.DATE,
+                type: 'TIMESTAMP',
+                defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             },
         });
     },
