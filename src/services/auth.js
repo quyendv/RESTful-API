@@ -23,7 +23,7 @@ export const register = ({ email, password }) =>
                 ? jwt.sign(
                       { id: response[0].id, email: response[0].email, role_code: response[0].role_code },
                       process.env.JWT_SECRET,
-                      { expiresIn: 3600 }, // expiresIn: ngày hết hạn, đơn vị đọc thêm trên docs, ở đây 5d là 5 ngày
+                      { expiresIn: '5d' }, // expiresIn: ngày hết hạn, đơn vị đọc thêm trên docs, ở đây 5d là 5 ngày
                   )
                 : null; // nếu created thành công mới có token, response[0] = User
 
@@ -56,7 +56,7 @@ export const login = ({ email, password }) =>
                 ? jwt.sign(
                       { id: response.id, email: response.email, role_code: response.role_code },
                       process.env.JWT_SECRET,
-                      { expiresIn: 3600 },
+                      { expiresIn: '5d' },
                   )
                 : null;
 
