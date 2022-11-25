@@ -1,0 +1,31 @@
+const { Model } = require('sequelize');
+
+module.exports = (sequelize, DataTypes) => {
+    class Category extends Model {
+        /**
+         * Helper method for defining associations.
+         * This method is not a part of Sequelize lifecycle.
+         * The `models/index` file will call this method automatically.
+         */
+        static associate(models) {
+            // define association here
+            Category.belongsTo(models.Role, { foreignKey: 'role_code', targetKey: 'code', as: 'roleData' });
+        }
+    }
+    Category.init(
+        {
+            code: DataTypes.STRING,
+            value: {
+                type: DataTypes.STRING,
+                set(value) {
+                    this.setDataValue('value', value.charAt(0).toUpperCase() + value.slice(1)); // value nhận vào là giá trị chuẩn bị thêm vào db, còn 'value' là cột value trong table
+                },
+            },
+        },
+        {
+            sequelize,
+            modelName: 'Category',
+        },
+    );
+    return Category;
+};
