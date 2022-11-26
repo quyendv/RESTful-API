@@ -17,8 +17,6 @@ export const register = ({ email, password }) =>
                 },
             });
 
-            console.log(response);
-
             const token = response[1]
                 ? jwt.sign(
                       { id: response[0].id, email: response[0].email, role_code: response[0].role_code },
@@ -32,12 +30,6 @@ export const register = ({ email, password }) =>
                 mes: response[1] ? 'Register is successfully' : 'Email is used',
                 token,
             });
-
-            resolve({
-                err: 0,
-                mes: 'register service',
-            });
-            console.log('after resolve');
         } catch (error) {
             reject(error);
         }

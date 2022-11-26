@@ -2,3 +2,4 @@
 export * as authController from './auth';
 export * as userController from './user';
 export * as insertController from './insert';
+export * as bookController from './book';
