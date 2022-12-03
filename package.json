@@ -20,7 +20,8 @@
         "joi": "^17.7.0",
         "jsonwebtoken": "^8.5.1",
         "mysql2": "^2.3.3",
-        "sequelize": "^6.25.6"
+        "sequelize": "^6.25.6",
+        "uuid": "^9.0.0"
     },
     "devDependencies": {
         "@babel/core": "^7.20.2",

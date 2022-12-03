@@ -13,7 +13,7 @@ export const getOne = (userId) =>
                 include: [
                     {
                         model: db.Role,
-                        as: 'roleData', // trùng với as trong models/user
+                        as: 'roleData', // trùng với as trong models/user -> gom các cột khi join lại thành 1 object tên là asName
                         attributes: ['id', 'code', 'value'], // attributes có thể là array/object với include/exclude: https://sequelize.org/docs/v6/core-concepts/model-querying-basics/#specifying-attributes-for-select-queries
                     },
                 ],

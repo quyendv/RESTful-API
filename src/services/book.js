@@ -1,4 +1,5 @@
 import { Op } from 'sequelize';
+import { v4 as generateId } from 'uuid';
 import db from '../models';
 
 // READ
@@ -21,6 +22,18 @@ export const getBooks = ({ page, limit, order, name, available, ...query }) =>
             const response = await db.Book.findAndCountAll({
                 where: query,
                 ...queries,
+                attributes: {
+                    exclude: ['category_code'], // bỏ cột có sẵn đi vì join với category có cột code rồi
+                },
+                include: [
+                    {
+                        model: db.Category,
+                        attributes: {
+                            exclude: ['createdAt', 'updatedAt'], // attributes: [cột muốn lấy] như user cũng được hoặc {exclude: [cột muốn loại]} -> nhớ đuôi ed + At
+                        },
+                        as: 'categoryData', // trùng trong as model book -> gom các cột khi join lại thành 1 object tên là asName
+                    },
+                ], // join thêm 1 bảng dùng {} cũng được còn nhiều phải [] -> luôn dùng [] cũng được
             });
 
             resolve({
@@ -34,5 +47,27 @@ export const getBooks = ({ page, limit, order, name, available, ...query }) =>
     });
 
 // CREATE
+export const createNewBook = (body) =>
+    new Promise(async (resolve, reject) => {
+        try {
+            const response = db.Book.findOrCreate({
+                where: {
+                    title: body?.title, // k cần ?. cũng được thì phải
+                },
+                defaults: {
+                    ...body,
+                    id: generateId(),
+                }, // default cho 1 cột, defaults cho nhiều cột
+            });
+            console.log(response);
+            resolve({
+                err: response[1] ? 0 : 1,
+                mes: response[1] ? 'Create successfully' : 'Create failed',
+                // bookData: response, // k cần trả: https://youtu.be/9Umjq5J40sk?list=PLGcINiGdJE93CggoN9YBjSnDRV7Rbp3Qu&t=1349
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
 // UPDATE
 // DELETE

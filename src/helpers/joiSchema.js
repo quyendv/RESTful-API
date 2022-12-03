@@ -1,5 +1,6 @@
 import joi from 'joi';
 
+// user rules
 export const email = joi
     .string()
     // .email({ minDomainSegments: 2, tlds: { allow: ['com'] } })
@@ -11,3 +12,10 @@ export const password = joi
     // .pattern(new RegExp('^[a-zA-Z0-9]{6,30}$')) // 6 đến 30 kí tự,
     .min(6)
     .required(); // nhớ required cho những cái bắt buộc
+
+// book rules
+export const title = joi.string().required();
+export const price = joi.number().required();
+export const available = joi.number().required();
+export const category_code = joi.string().uppercase().alphanum().required(); // alphanum k chua space
+export const image = joi.string().required();
