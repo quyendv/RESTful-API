@@ -2,6 +2,8 @@ import { Op } from 'sequelize';
 import { v4 as generateId } from 'uuid';
 import db from '../models';
 
+const cloudinary = require('cloudinary').v2;
+
 // READ
 export const getBooks = ({ page, limit, order, name, available, ...query }) =>
     new Promise(async (resolve, reject) => {
@@ -47,16 +49,18 @@ export const getBooks = ({ page, limit, order, name, available, ...query }) =>
     });
 
 // CREATE
-export const createNewBook = (body) =>
+export const createNewBook = (body, fileData) =>
     new Promise(async (resolve, reject) => {
         try {
-            const response = db.Book.findOrCreate({
+            const response = await db.Book.findOrCreate({
+                // nhớ await, k có thì nếu lỗi id hay gì nó log ra, nếu có await nó toàn internal error chả biết, nma phải có mới create successfully được, nếu k tạo được cũng trả về create failed
                 where: {
                     title: body?.title, // k cần ?. cũng được thì phải
                 },
                 defaults: {
                     ...body,
                     id: generateId(),
+                    image: fileData?.path, // override lại image, giá trị là path của cloudinary
                 }, // default cho 1 cột, defaults cho nhiều cột
             });
             console.log(response);
@@ -65,6 +69,8 @@ export const createNewBook = (body) =>
                 mes: response[1] ? 'Create successfully' : 'Create failed',
                 // bookData: response, // k cần trả: https://youtu.be/9Umjq5J40sk?list=PLGcINiGdJE93CggoN9YBjSnDRV7Rbp3Qu&t=1349
             });
+            // -> lợi dụng tính năng resolve vẫn chạy tiếp bên dưới được (chỉ trừ k resolve tiếp thôi) khác với return là dừng hàm, ta sẽ xử lý xóa ảnh up mới nếu tạo k thành công (khi input hợp lệ và sách đã tồn tại)
+            if (fileData && !response[1]) cloudinary.uploader.destroy(fileData.filename); // nếu có fileData (khi input đúng sẽ có) và khi response[1] là false (tồn tại rồi) sẽ xóa ảnh vừa up đi
         } catch (error) {
             reject(error);
         }
