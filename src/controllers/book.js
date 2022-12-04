@@ -1,5 +1,5 @@
 import joi from 'joi';
-import { available, bid, bids, category_code, image, price, title } from '../helpers/joiSchema';
+import { available, bid, bids, category_code, filename, image, price, title } from '../helpers/joiSchema';
 import { badRequest, internalServerError } from '../middlewares/handleErrors';
 import * as services from '../services';
 
@@ -58,7 +58,7 @@ export const updateBook = async (req, res) => {
 
 export const deleteBook = async (req, res) => {
     try {
-        const { error } = joi.object({ bids }).validate(req.query); // hoặc {bids: req.query.bids} , do để bids dưới dạng params, còn query là dạng ?...=...
+        const { error } = joi.object({ bids, filename }).validate(req.query); // hoặc {bids: req.query.bids} , do để bids dưới dạng params, còn query là dạng ?...=...
         // Phân biệt query hay params: https://stackoverflow.com/questions/14417592/node-js-difference-between-req-query-and-req-params
         if (error) {
             return badRequest(error.details[0].message, res);

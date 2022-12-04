@@ -61,6 +61,7 @@ export const createNewBook = (body, fileData) =>
                     ...body,
                     id: generateId(),
                     image: fileData?.path, // override lại image, giá trị là path của cloudinary
+                    filename: fileData?.filename,
                 }, // default cho 1 cột, defaults cho nhiều cột
             });
 
@@ -111,8 +112,9 @@ export const updateBook = ({ bid, ...restData }, fileData) =>
  * Hàm destroy nó trả về 1 số lượng bản ghi được xóa (khác update lầ mảng 1 phần tử), và nó mặc định xóa mềm, xóa hẳn cần force
  * Link hàm (phần restore ngay bên dưới phần đó nữa): https://sequelize.org/docs/v6/core-concepts/paranoid/#deleting
  * // Lưu ý controller truyền query thì service phải destructuring lấy bids, hoặc cotroller truyền thẳng req.query.bids thì chỗ này lấy được (bids)
+ * params xóa có dạng { bids=[id1, id2, ...], filename=[filename1, filename2, ...] }
  */
-export const deleteBook = ({ bids }) =>
+export const deleteBook = ({ bids, filename }) =>
     new Promise(async (resolve, reject) => {
         try {
             const response = await db.Book.destroy({
@@ -126,6 +128,7 @@ export const deleteBook = ({ bids }) =>
                 err: response > 0 ? 0 : 1,
                 mes: response > 0 ? `Delete ${response} book(s) successfully` : 'Cannot delete book/ Book ID not found',
             });
+            if (filename) cloudinary.api.delete_resources(filename); // nhận mảng [item1, item2, item3...]
         } catch (error) {
             reject(error);
         }

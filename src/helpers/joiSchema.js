@@ -21,3 +21,5 @@ export const category_code = joi.string().uppercase().alphanum().required(); // 
 export const image = joi.string().required(); // cái này phải sửa thành url nhưng mà để tạm string, chưa biết required url như nào
 export const bid = joi.string().required(); // bid: bookID
 export const bids = joi.array().required(); // bid array
+// export const name = joi.string(); // V15: k cần thiết cho delete, nhưng ý là thêm param đó vào thì k báo lỗi not allowed
+export const filename = joi.array().required();
