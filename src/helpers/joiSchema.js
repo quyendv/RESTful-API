@@ -18,4 +18,6 @@ export const title = joi.string().required();
 export const price = joi.number().required();
 export const available = joi.number().required();
 export const category_code = joi.string().uppercase().alphanum().required(); // alphanum k chua space
-export const image = joi.string().required();
+export const image = joi.string().required(); // cái này phải sửa thành url nhưng mà để tạm string, chưa biết required url như nào
+export const bid = joi.string().required(); // bid: bookID
+export const bids = joi.array().required(); // bid array

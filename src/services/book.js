@@ -63,10 +63,11 @@ export const createNewBook = (body, fileData) =>
                     image: fileData?.path, // override lại image, giá trị là path của cloudinary
                 }, // default cho 1 cột, defaults cho nhiều cột
             });
+
             console.log(response);
             resolve({
                 err: response[1] ? 0 : 1,
-                mes: response[1] ? 'Create successfully' : 'Create failed',
+                mes: response[1] ? 'Create successfully' : 'Create failed, may be book is already',
                 // bookData: response, // k cần trả: https://youtu.be/9Umjq5J40sk?list=PLGcINiGdJE93CggoN9YBjSnDRV7Rbp3Qu&t=1349
             });
             // -> lợi dụng tính năng resolve vẫn chạy tiếp bên dưới được (chỉ trừ k resolve tiếp thôi) khác với return là dừng hàm, ta sẽ xử lý xóa ảnh up mới nếu tạo k thành công (khi input hợp lệ và sách đã tồn tại)
@@ -75,5 +76,57 @@ export const createNewBook = (body, fileData) =>
             reject(error);
         }
     });
+
 // UPDATE
+/**
+ * Hàm update({sửa cái gì}, {đk sửa}) và response nó trả về mảng 1 phần tử có giá trị là số bản khi được update: 0, 1, 2, ... => check update được hay k thì check response[0] > 0 hay không
+ * Hàm update chỉ sửa những thông tin thay đổi, nên dùng với put thì nó vẫn ngang patch: https://youtu.be/UMCp6HoeLV4?list=PLGcINiGdJE93CggoN9YBjSnDRV7Rbp3Qu&t=1005
+ * fileData: middleware uploader sẽ trả về req.file (fileData mình gán) là undefined nếu k up lên, sau đó nếu up lên mà bid thiếu (lỗi input đầu vào với joi, nhưng mà k check quá nhiều field như createNewBook vì chỉ chỉ update những thông tin cần thay đổi thôi), nếu lỗi joi thì destroy ảnh vừa up đi, nếu k lỗi thì pass xuống service
+ */
+export const updateBook = ({ bid, ...restData }, fileData) =>
+    new Promise(async (resolve, reject) => {
+        try {
+            if (fileData) restData.image = fileData.path; // hoặc làm như createNewBook bên trên, giải nó ra rồi thêm image = fileData?.path cũng được
+            console.log(restData);
+            const response = await db.Book.update(restData, {
+                where: { id: bid }, // chú ý khi put nhập input (trong req.body) là bid: ... nhưng cột trong table là id nha
+            });
+
+            console.log(response); // mảng 1 phần tử chứa số lượng bản ghi được update
+            resolve({
+                err: response[0] > 0 ? 0 : 1,
+                mes:
+                    response[0] > 0
+                        ? `Update ${response[0]} book(s) successfully`
+                        : 'Cannot update book/ Book ID not found',
+            });
+            if (fileData && response[0] === 0) cloudinary.uploader.destroy(fileData.filename); // filename not fileName
+        } catch (error) {
+            reject(error);
+        }
+    });
+
 // DELETE
+/**
+ * Hàm destroy nó trả về 1 số lượng bản ghi được xóa (khác update lầ mảng 1 phần tử), và nó mặc định xóa mềm, xóa hẳn cần force
+ * Link hàm (phần restore ngay bên dưới phần đó nữa): https://sequelize.org/docs/v6/core-concepts/paranoid/#deleting
+ * // Lưu ý controller truyền query thì service phải destructuring lấy bids, hoặc cotroller truyền thẳng req.query.bids thì chỗ này lấy được (bids)
+ */
+export const deleteBook = ({ bids }) =>
+    new Promise(async (resolve, reject) => {
+        try {
+            const response = await db.Book.destroy({
+                where: {
+                    id: bids, // id thuộc 1 mảng vẫn truyền như vầy được mà k cần [Op.in] thì phải
+                },
+            });
+
+            console.log(response); // 1 phần tử, k phải mảng 1 phần tử như update
+            resolve({
+                err: response > 0 ? 0 : 1,
+                mes: response > 0 ? `Delete ${response} book(s) successfully` : 'Cannot delete book/ Book ID not found',
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
