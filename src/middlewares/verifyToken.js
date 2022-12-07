@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { TokenExpiredError } from 'jsonwebtoken';
 import { notAuth } from './handleErrors';
 
 const verifyToken = (req, res, next) => {
@@ -8,7 +8,15 @@ const verifyToken = (req, res, next) => {
     const accessToken = token.split(' ')[1]; // vì access_token gửi lên có dạng 'Bearer jsonwebtoken.vv...'
     jwt.verify(accessToken, process.env.JWT_SECRET, (err, user) => {
         // tự xem cú pháp verify, đối số thứ 3 là cb chứa err và decode (ở đây là thông tin user)
-        if (err) return notAuth('Access token may be expired or invalid', res); // ở đây là có token nhưng k hợp lệ, kiểu mã hóa ra mà k đúng gì đó ấy
+
+        // Chú ý: nếu có lỗi mới ktra nó là lỗi gì, vì nếu k có lỗi err là null, check instanceof bên dưới luôn false
+        if (err) {
+            const isExpired = err instanceof TokenExpiredError;
+            // Nếu là lỗi token k hợp lệ
+            if (!isExpired) return notAuth('Access token is invalid', res, isExpired); // ở đây là có token nhưng k hợp lệ, kiểu mã hóa ra mà k đúng gì đó ấy
+            // Nếu lỗi token hết hạn
+            if (isExpired) return notAuth('Access token is expired', res, isExpired);
+        }
 
         req.user = user; // tạo thêm key cho req, và dùng req.user trong controllers/user hàm getCurrent
         next(); // vì hàm này viết ở trong routes/user làm middleware xác thực token trước khi login, ... nên phải có next mới chuyển sang hàm tiếp được.

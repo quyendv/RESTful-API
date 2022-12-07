@@ -8,7 +8,7 @@ export const getOne = (userId) =>
             const response = await db.User.findOne({
                 where: { id: userId }, // id là column trong db, hoặc dùng email cũng được vì nó unique
                 attributes: {
-                    exclude: ['password', 'role_code'], // sẽ lấy record (bản ghi) của user ra theo id nhưng k trả về column password làm gì: https://youtu.be/SSCHzHaTnqQ?list=PLGcINiGdJE93CggoN9YBjSnDRV7Rbp3Qu&t=1676
+                    exclude: ['password', 'role_code', 'refresh_token'], // sẽ lấy record (bản ghi) của user ra theo id nhưng k trả về column password làm gì: https://youtu.be/SSCHzHaTnqQ?list=PLGcINiGdJE93CggoN9YBjSnDRV7Rbp3Qu&t=1676
                 },
                 include: [
                     {

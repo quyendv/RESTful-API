@@ -1,5 +1,5 @@
 import joi from 'joi';
-import { available, bid, bids, category_code, filename, image, price, title } from '../helpers/joiSchema';
+import { available, bid, bids, category_code, description, filename, image, price, title } from '../helpers/joiSchema';
 import { badRequest, internalServerError } from '../middlewares/handleErrors';
 import * as services from '../services';
 
@@ -25,7 +25,7 @@ export const createNewBook = async (req, res) => {
 
         const fileData = req.file; // do middleware uploader đã có gán req.file/files rồi
         const { error } = joi
-            .object({ title, price, category_code, available, image })
+            .object({ title, price, category_code, available, image, description })
             .validate({ ...req.body, image: fileData?.path }); // Chú ý sửa cái này
         if (error) {
             if (fileData) cloudinary.uploader.destroy(fileData.filename); // fileData có key fileName, để xóa nếu có lỗi từ input (thiếu required, invalid) thì xóa ảnh vừa up đi khỏi cloudinary vì có tạo được đâu mà up lên cloud
