@@ -1,0 +1,48 @@
+GET http://localhost:5000/api/v1/user/
+
+###
+POST http://localhost:5000/api/v1/auth/register
+Content-Type: application/json
+
+{
+    "email": "admin1@gmail.com",
+    "password": "123456"
+}
+
+###
+POST http://localhost:5000/api/v1/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@gmail.com",
+    "password": "123456"
+}
+
+###
+GET http://localhost:5000/api/v1/user/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlX2NvZGUiOiJSMyIsImlhdCI6MTY2OTMwMjkzMCwiZXhwIjoxNjY5NzM0OTMwfQ.Oq4hVcTOhe-8vf5eyc7Rso_0WRkwPd5C6PyYwwXkiC0
+
+###
+GET http://localhost:5000/api/v1/insert
+
+###################### API cho book
+### 
+GET http://localhost:5000/api/v1/book
+
+### 
+GET http://localhost:5000/api/v1/book?name=passion
+
+### 
+GET http://localhost:5000/api/v1/book?order[]=price&order[]=desc
+
+### 
+GET http://localhost:5000/api/v1/book?order[]=price&order[]=desc&limit=2
+
+###
+GET http://localhost:5000/api/v1/book?order[]=price&order[]=desc&limit=2&page=2
+
+###
+GET http://localhost:5000/api/v1/book?order[]=price&order[]=desc&limit=2&page=2&name=of
+
+###
+GET http://localhost:5000/api/v1/book?available[]=5&available[]=10
